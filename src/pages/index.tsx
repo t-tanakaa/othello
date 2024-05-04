@@ -18,60 +18,46 @@ const Home = () => {
   const [turncolor, setturncolor] = useState(1);
   const [board, setboard] = useState([
     //空白0 白1 黒2 row=行 for 調べる
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 1, 2, 0, 0, 0],
-    // [0, 0, 0, 2, 1, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 2, 1],
-    [0, 0, 0, 0, 0, 1, 2, 1],
-    [0, 0, 0, 0, 2, 1, 2, 1],
-    [0, 0, 0, 1, 2, 1, 2, 1],
-    [0, 0, 2, 1, 2, 1, 2, 1],
-    [0, 2, 1, 2, 1, 2, 1, 2],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 2, 0, 0, 0],
+    [0, 0, 0, 2, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
-
-    let n = 0;
-    let m = 0;
-
-    //console.log(board[y][x])
-    for (const direction of directions) {
-      const yoko = direction[0];
-      const tate = direction[1];
-    }
-    if (board[y][x] !== 0) return;
-    //console.log(100);
     const newboard = structuredClone(board);
 
-    while (n < 7) {
-      //console.log(200);
-      n++;
-      if (board[y + n] !== undefined && board[y + n][x] === 2 / turncolor) {
-        //console.log(300);
-        if (board[y + 1 + n] !== undefined && board[y + 1 + n][x] === turncolor) {
-          //console.log(400);
-          newboard[y][x] = turncolor;
-          while (n >= m) {
-            //console.log(500);
-            newboard[y + m][x] = turncolor;
-            m++;
+    console.log(board[y][x]);
+    for (const direction of directions) {
+      if (board[y][x] === 0) {
+        if (
+          board[y + direction[0]] !== undefined &&
+          board[y + direction[0]][x + direction[1]] === 2 / turncolor
+        ) {
+          for (let n = 1; n < 7; n++) {
+            if (
+              board[y + direction[0] * n] !== undefined &&
+              board[y + direction[0] * n][x + direction[1] * n] === turncolor
+            ) {
+              newboard[y][x] = turncolor;
+              let m = 0;
+              while (n > m) {
+                m++;
+                newboard[y + direction[0] * m][x + direction[1] * m] = turncolor;
+              }
+              setturncolor(2 / turncolor);
+              setboard(newboard);
+              break;
+            } else if (board[y + direction[0] * n][x + direction[1] * n] === 0) break;
           }
-          setturncolor(2 / turncolor);
-          break;
         }
-      } else {
-        break;
       }
     }
-    setboard(newboard);
   };
 
   return (
