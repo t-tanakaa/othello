@@ -10,6 +10,30 @@ const directions = [
   [-1, 0],
   [-1, 1],
 ];
+const site = (board: number[][], turncolor: number, x: number, y: number) => {
+  for (const direction of directions) {
+    if (board[y][x] === 0) {
+      if (
+        board[y + direction[0]] !== undefined &&
+        board[y + direction[0]][x + direction[1]] === 2 / turncolor
+      ) {
+        for (let n = 1; n < 7; n++) {
+          if (
+            board[y + direction[0] * n] !== undefined &&
+            board[y + direction[0] * n][x + direction[1] * n] === turncolor
+          ) {
+            return true;
+          } else if (
+            board[y + direction[0] * n] === undefined ||
+            board[y + direction[0] * n][x + direction[1] * n] === 0 ||
+            board[y + direction[0] * n][x + direction[1] * n] === 3
+          )
+            break;
+        }
+      }
+    }
+  }
+};
 const sum1 = [2, 2];
 const Home = () => {
   const [turncolor, setturncolor] = useState(1);
@@ -29,10 +53,9 @@ const Home = () => {
     // console.log(x, y);
     const newboard = structuredClone(board);
 
-    console.log(board[y][x]);
-    //const site = (board: number[][], turncolor:number) =>
+    //console.log(board[y][x]);
     for (const direction of directions) {
-      if (board[y][x] === 0) {
+      if (board[y][x] === 3) {
         if (
           board[y + direction[0]] !== undefined &&
           board[y + direction[0]][x + direction[1]] === 2 / turncolor
@@ -48,18 +71,29 @@ const Home = () => {
                 m++;
                 newboard[y + direction[0] * m][x + direction[1] * m] = turncolor;
               }
+
+              for (let dy = 0; dy < 8; dy++) {
+                for (let dx = 0; dx < 8; dx++) {
+                  if (newboard[dy][dx] === 3) newboard[dy][dx] = 0;
+                  const ss = site(newboard, 2 / turncolor, dx, dy);
+                  if (ss) newboard[dy][dx] = 3;
+                }
+              }
+
               setturncolor(2 / turncolor);
               setboard(newboard);
               break;
             } else if (
-              board[y + direction[0] * n] !== undefined &&
-              board[y + direction[0] * n][x + direction[1] * n] === 0
+              board[y + direction[0] * n] === undefined ||
+              board[y + direction[0] * n][x + direction[1] * n] === 0 ||
+              board[y + direction[0] * n][x + direction[1] * n] === 3
             )
               break;
           }
         }
       }
     }
+
     sum1.fill(0);
     for (let q = 0; q < 8; q++) {
       for (let w = 0; w < 8; w++) {
@@ -74,7 +108,6 @@ const Home = () => {
         }
       }
     }
-    console.log(sum1);
   };
 
   return (
